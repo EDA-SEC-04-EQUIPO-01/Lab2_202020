@@ -169,42 +169,44 @@ def greater_average(element1, element2):
         return True
     return False
 
-def orderElementsByCriteria(lst):
+def orderElementsByCriteria(lst,tipo,gb,cant):
     """
     Retorna una lista con cierta cantidad de elementos ordenados por el criterio
     """
     t1_start = process_time()
-    print("Filtrando listas...")
-    shsort.shellSort(lst,greater_count)
-    bestcount = []
-    i = 1
-    for a in list(range(1,10)):
-        element = lt.getElement(lst,i)
-        bestcount.append({element["original_title"]:element["vote_count"]})
-        i+=1
+    if tipo == 1:
+        print("Filtrando listas...")
+        shsort.shellSort(lst,greater_count)
+        if gb == 1:
+            bestcount = []
+            for a in list(range(1,cant+1)):
+                element = lt.getElement(lst,a)
+                bestcount.append({element["original_title"]:element["vote_count"]})
+            print("Top",cant, "películas con mayor cantidad de votos: \n",bestcount)
 
-    worstcount = []
-    i = lt.size(lst)
-    for a in list(range(lt.size(lst)-10,lt.size(lst))):
-        element = lt.getElement(lst,a)
-        worstcount.append({element["original_title"]:element["vote_count"]})
+        elif gb == 2:
+            worstcount = []
+            for a in list(range(lt.size(lst)-(cant),lt.size(lst))):
+                element = lt.getElement(lst,a)
+                worstcount.append({element["original_title"]:element["vote_count"]})
+            print("Top",cant, "películas con menor cantidad de votos: \n",worstcount)
 
-    shsort.shellSort(lst,greater_average)
-    bestaverage = []
-    for a in list(range(1,10)):
-         element = lt.getElement(lst,a)
-         bestaverage.append({element["original_title"]:element["vote_average"]})
+    if tipo == 2:
+        print("Filtrando listas...")
+        shsort.shellSort(lst,greater_average)
+        if gb ==1:
+            bestaverage = []
+            for a in list(range(1,cant+1)):
+                element = lt.getElement(lst,a)
+                bestaverage.append({element["original_title"]:element["vote_average"]})
+            print("Top",cant,"películas con mejor promedio de votos: \n",bestaverage)
 
-    worstaverage = []
-    for a in list(range(lt.size(lst)-10,lt.size(lst))):
-        element = lt.getElement(lst,a)
-        worstaverage.insert(0,{element["original_title"]:element["vote_average"]})
-
-
-    print("Top 10 películas con mayor cantidad de votos: \n",bestcount)
-    print("Top 10 películas con menor cantidad de votos: \n",worstcount)
-    print("Top 10 películas con mejor promedio de votos: \n",bestaverage)
-    print("Top 10 películas con peor promedio de votos: \n",worstaverage)
+        elif gb ==2:
+            worstaverage = []
+            for a in list(range(lt.size(lst)-(cant),lt.size(lst))):
+                element = lt.getElement(lst,a)
+                worstaverage.insert(0,{element["original_title"]:element["vote_average"]})
+            print("Top",cant, "películas con peor promedio de votos: \n",worstaverage)
 
     t1_stop = process_time()
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos")
@@ -228,7 +230,8 @@ def main():
             if int(inputs[0])==1: #opcion 1
                 lista = loadCSVFile("Data/theMoviesdb/SmallMoviesDetailsCleaned.csv") #llamar funcion cargar datos
                 print("Datos de películas cargados, ",lista['size']," elementos cargados")
-                lista2 = loadCSVFile("Data/theMoviesdb/MoviesCastingRaw-small.csv")
+                print(lista)
+                lista2 = loadCSVFile("Data/theMoviesdb/AllMoviesCastingRaw.csv")
                 print("Datos del elenco cargados, ",lista2['size']," elementos cargados")
             elif int(inputs[0])==2: #opcion 2
                 if lista==None or lista['size']==0: #obtener la longitud de la lista
@@ -251,12 +254,15 @@ def main():
                         type = "id"
                     criteria =input('Ingrese el nombre del director\n')
                     counter=countElementsByCriteria(criteria,lista2,lista,type)
-                    print("El director",criteria,"tiene un total de",counter[1],"con una calificación promedio de",counter[2],"\n",counter[0])
+                    print("El director",criteria,"tiene un total de",counter[1],"películas con una calificación promedio de",counter[2],"\n",counter[0])
             elif int(inputs[0])==5: #opcion 5
                 if lista==None or lista['size']==0: #obtener la longitud de la lista
                     print("La lista esta vacía")
                 else:
-                    orderElementsByCriteria(lista)
+                    tipo = int(input("Ingrese si quiere ver la cantidad de votos o el promedio de votos (1 o 2): "))
+                    guba = int(input("Ingrese si quiere ver las mejores o las peores (1 o 2): "))
+                    cant = int(input("Ingrese la cantidad de películas que desea ver en el top: "))
+                    orderElementsByCriteria(lista, tipo, guba, cant)
 
             elif int(inputs[0])==0: #opcion 0, salir
                 sys.exit(0)
