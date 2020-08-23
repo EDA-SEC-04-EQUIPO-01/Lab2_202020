@@ -29,6 +29,7 @@
 import config as cf
 import sys
 import csv
+from Sorting import shellsort as sh
 from ADT import list as lt
 from DataStructures import listiterator as it
 from DataStructures import liststructure as lt
@@ -75,7 +76,8 @@ def printMenu():
     print("1- Cargar Datos")
     print("2- Contar los elementos de la Lista")
     print("3- Contar elementos filtrados por palabra clave")
-    print("4- Consultar elementos a partir de dos listas")
+    print("4- Conocer el trabajo de un director") #editado
+    print("5- Buscar las mejores o peores peliculas") #editado
     print("0- Salir")
 
 def countElementsFilteredByColumn(criteria, column, lst):
@@ -99,7 +101,7 @@ def countElementsFilteredByColumn(criteria, column, lst):
         t1_start = process_time() #tiempo inicial
         counter=0
         iterator = it.newIterator(lst)
-        while  it.hasNext(iterator):
+        while it.hasNext(iterator):
             element = it.next(iterator)
             if criteria.lower() in element[column].lower(): #filtrar por palabra clave 
                 counter+=1           
@@ -107,17 +109,60 @@ def countElementsFilteredByColumn(criteria, column, lst):
         print("Tiempo de ejecución ",t1_stop-t1_start," segundos")
     return counter
 
-def countElementsByCriteria(criteria, column, lst):
-    """
-    Retorna la cantidad de elementos que cumplen con un criterio para una columna dada
-    """
-    return 0
+def countElementsByCriteria(criteria, lista, lista2):
+    res=0
+    listaID=[]
+    Prom=0
+    iterator = it.newIterator(lista)
+    while it.hasNext(iterator):
+        element = it.next(iterator)
+        if criteria == element['director_name']: #filtrar por palabra clave
+            res +=1
+            listaID.append(element["id"])
 
-def orderElementsByCriteria(function, column, lst, elements):
-    """
-    Retorna una lista con cierta cantidad de elementos ordenados por el criterio
-    """
-    return 0
+    iterator2 = it.newIterator(lista2)
+    while it.hasNext(iterator2):
+        element = it.next(iterator2)
+        if element["id"] in listaID: #buscar id de la lista 2
+            print(Prom)
+            Prom += float((element["vote_average"]))
+    promedio= round(Prom/res,2)
+    final= str(res) + str(" peliculas con un promedio de ") +str(promedio)
+    return final
+
+def comparacionMenor(element1,element2):
+    if float(element1['vote_average']) < float(element2['vote_average']):
+        return True
+    return False
+
+def comparacionMayor(element1,element2):
+    if float(element1['vote_average']) > float(element2['vote_average']):
+        return True
+    return False
+
+def orderElementsByCriteria(lst,criteria,cuantas): 
+    cuantas= int(cuantas)
+    respuesta=[]
+    cont=0
+    if criteria == "B" or criteria == "b":
+        sh.shellSort(lst,comparacionMayor)
+        iterator = it.newIterator(lst)
+        while it.hasNext(iterator):
+            element = it.next(iterator)
+            if cont<cuantas:
+                respuesta.append(element['original_title'])
+                respuesta.append(element['vote_average'])
+                cont+=1
+    if criteria == "P" or criteria == "p":
+        sh.shellSort(lst,comparacionMenor)
+        iterator = it.newIterator(lst)
+        while it.hasNext(iterator):
+            element = it.next(iterator)
+            if cont<cuantas:
+                respuesta.append(element['original_title'])
+                respuesta.append(element['vote_average'])
+                cont+=1
+    return respuesta
 
 def main():
     """
@@ -128,12 +173,14 @@ def main():
     Return: None 
     """
     lista = lt.newList()   # se require usar lista definida
+    lista2 = lt.newList()  
     while True:
         printMenu() #imprimir el menu de opciones en consola
         inputs =input('Seleccione una opción para continuar\n') #leer opción ingresada
         if len(inputs)>0:
             if int(inputs[0])==1: #opcion 1
-                lista = loadCSVFile("Data/test.csv") #llamar funcion cargar datos
+                lista = loadCSVFile("Data/theMoviesdb/MoviesCastingRaw-small.csv") #llamar funcion cargar datos
+                lista2 = loadCSVFile("Data/theMoviesdb/SmallMoviesDetailsCleaned.csv") #llamar funcion cargar datos 2
                 print("Datos cargados, ",lista['size']," elementos cargados")
             elif int(inputs[0])==2: #opcion 2
                 if lista==None or lista['size']==0: #obtener la longitud de la lista
@@ -146,13 +193,29 @@ def main():
                     criteria =input('Ingrese el criterio de búsqueda\n')
                     counter=countElementsFilteredByColumn(criteria, "nombre", lista) #filtrar una columna por criterio  
                     print("Coinciden ",counter," elementos con el crtierio: ", criteria  )
+            #----------------------------------------------------------------------------------------------
             elif int(inputs[0])==4: #opcion 4
-                if lista==None or lista['size']==0: #obtener la longitud de la lista
+                if lista==None or lista['size']==0 or lista2==None or lista2['size']==0: #obtener la longitud de la lista
                     print("La lista esta vacía")
                 else:
-                    criteria =input('Ingrese el criterio de búsqueda\n')
-                    counter=countElementsByCriteria(criteria,0,lista)
-                    print("Coinciden ",counter," elementos con el crtierio: '", criteria ,"' (en construcción ...)")
+                    criteria =input('Ingrese el nombre del director\n')
+                    counter=countElementsByCriteria(criteria,lista,lista2) # agregue director name
+                    print("La busqueda con el director ",criteria ," tiene ", counter)
+
+            elif int(inputs[0])==5: #opcion 5
+                if lista==None or lista['size']==0: #obtener la longitud de la lista
+                    print("La lista esta vacía")
+                else:   
+                    # orderElementsByCriteria(function, column, lst, elements):
+                    criteria =input('Escribe "B" si quieres buscar las mejores peliculas o "P" si quieres las peores peliculas\n')
+                    cuantas = input('Cuantas peliculas quieres recorrer (sugerimos mayor o igual a 10) \n')
+                    print("Cargando...")
+                    counter=orderElementsByCriteria(lista2,criteria,cuantas) 
+                    if criteria == "B" or criteria == "b":
+                        texto= "Las mejores peliculas son: "
+                    elif criteria == "P" or criteria == "p":
+                        texto= "Las peores peliculas son: " 
+                    print(texto +str(counter))
             elif int(inputs[0])==0: #opcion 0, salir
                 sys.exit(0)
                 
