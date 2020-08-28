@@ -228,9 +228,8 @@ def main():
         inputs =input('Seleccione una opción para continuar\n') #leer opción ingresada
         if len(inputs)>0:
             if int(inputs[0])==1: #opcion 1
-                lista = loadCSVFile("Data/theMoviesdb/SmallMoviesDetailsCleaned.csv") #llamar funcion cargar datos
+                lista = loadCSVFile("Data/theMoviesdb/AllMoviesDetailsCleaned.csv") #llamar funcion cargar datos
                 print("Datos de películas cargados, ",lista['size']," elementos cargados")
-                print(lista)
                 lista2 = loadCSVFile("Data/theMoviesdb/AllMoviesCastingRaw.csv")
                 print("Datos del elenco cargados, ",lista2['size']," elementos cargados")
             elif int(inputs[0])==2: #opcion 2
