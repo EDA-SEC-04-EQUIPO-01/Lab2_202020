@@ -82,6 +82,9 @@ def printMenu():
     print("3- Contar elementos filtrados por palabra clave")
     print("4- Conocer el trabajo de un director")
     print("5- Conocer los rankings de las películas")
+    print("6-")
+    print("7- Conocer un genero")
+    print("8-")
     print("0- Salir")
 
 def countElementsFilteredByColumn(criteria, column, lst):
@@ -213,6 +216,34 @@ def orderElementsByCriteria(lst,tipo,gb,cant):
 
     return "Acción realizada con éxito"
 
+def conocerUnGenero(lst,genero):
+    t1_start = process_time()
+    iterator = it.newIterator(lst)
+    pelis = []
+    sumpr = 0
+    counter = 0
+    if lst['size']==0:
+        print("La lista esta vacía")  
+        return 0
+    else:
+        while it.hasNext(iterator):
+            element = it.next(iterator)
+            if genero.lower() in element["genres"].lower():
+                pelis.append(element["original_title"])
+                sumpr += float(element["vote_average"])
+                counter+=1
+    try:
+        promedio = sumpr/counter
+    except:
+        promedio = 0
+
+    print("El género",genero,"tiene un total de",counter,"películas con un promedio acumulado de",round(promedio,3))
+    print(pelis)
+
+    return "Acción realizada con éxito"
+
+
+
 def main():
     """
     Método principal del programa, se encarga de manejar todos los metodos adicionales creados
@@ -228,9 +259,8 @@ def main():
         inputs =input('Seleccione una opción para continuar\n') #leer opción ingresada
         if len(inputs)>0:
             if int(inputs[0])==1: #opcion 1
-                lista = loadCSVFile("Data/theMoviesdb/SmallMoviesDetailsCleaned.csv") #llamar funcion cargar datos
+                lista = loadCSVFile("Data/theMoviesdb/AllMoviesDetailsCleaned.csv") #llamar funcion cargar datos
                 print("Datos de películas cargados, ",lista['size']," elementos cargados")
-                print(lista)
                 lista2 = loadCSVFile("Data/theMoviesdb/AllMoviesCastingRaw.csv")
                 print("Datos del elenco cargados, ",lista2['size']," elementos cargados")
             elif int(inputs[0])==2: #opcion 2
@@ -263,6 +293,11 @@ def main():
                     guba = int(input("Ingrese si quiere ver las mejores o las peores (1 o 2): "))
                     cant = int(input("Ingrese la cantidad de películas que desea ver en el top: "))
                     orderElementsByCriteria(lista, tipo, guba, cant)
+            elif int(inputs[0])==6: #opcion 6
+                pass
+            elif int(inputs[0])==7: #opcion 7
+                genero = input("Ingrese el género que desea conocer: ")
+                conocerUnGenero(lista,genero)
 
             elif int(inputs[0])==0: #opcion 0, salir
                 sys.exit(0)
