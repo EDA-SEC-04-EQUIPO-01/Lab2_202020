@@ -236,13 +236,13 @@ def conocerUnGenero(lst,genero):
         promedio = sumpr/counter
     except:
         promedio = 0
-
-    print("El género",genero,"tiene un total de",counter,"películas con un promedio acumulado de",round(promedio,3))
+    t1_stop = process_time() #tiempo final
+    
     print(pelis)
-
+    print("\nLa lista que se imprimió contiene los nombres de todas pas películas del género",genero)
+    print("\nEl género",genero,"tiene un total de",counter,"películas con un promedio acumulado de",round(promedio,3))
+    print("\nTiempo de ejecución ",t1_stop-t1_start," segundos")
     return "Acción realizada con éxito"
-
-
 
 def main():
     """
